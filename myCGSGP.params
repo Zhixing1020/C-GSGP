@@ -1,0 +1,146 @@
+# Copyright 2006 by Sean Luke and George Mason University
+# Licensed under the Academic Free License version 3.0
+# See the file "LICENSE" for more information
+
+parent.0 = ./gp-workspace-2016Competent/Evolution/src/ec/gp/koza/koza.params
+
+jobs = 30
+seed.0 = 123456
+
+state = ec.gp.semantic.EvoState
+#stat.silent.file = true
+stat = ec.gp.semantic.statistics.ExtendedStatistics
+stat.printIndividual = true
+stat.calculateUniqueSemantics = true
+stat.calculateUniqueIndividuals = true
+evaluationLimit = 10000000
+stat.out = ./gp-workspace-2016Competent/Evolution/out.stat
+stat.equivalenceChecker = ec.gp.syntactic.equivalence.DoubleEquivalenceChecker
+libraryFactory = ec.gp.semantic.library.DoublePopulationLibraryFactory
+
+pop.subpop.0.species.fitness = ec.gp.koza.KozaFitness
+
+#Breeding parameters
+init = ec.gp.GPInitializer
+
+pop.subpop.0.species = ec.gp.GPSpecies
+pop.subpop.0.species.ind = ec.gp.GPIndividual
+pop.subpop.0.size = 1000
+generations = 1
+
+# We retry 100 times for duplicates (this is the lil-gp default)
+# in our subpopulation 0
+
+pop.subpop.0.duplicate-retries = 1
+
+# That GPIndividual has a single tree, which uses the
+# "tc0" Tree Constraints (which we define below later)
+
+pop.subpop.0.species.ind.numtrees = 1
+pop.subpop.0.species.ind.tree.0 = ec.gp.GPTree
+pop.subpop.0.species.ind.tree.0.tc = tc0
+
+
+# The GPSpecies has 2 pipelines, Crossover and Reproduction,
+# chosen with 0.9 and 0.1 likelihood respectively.
+
+pop.subpop.0.species.pipe = ec.breed.MultiBreedingPipeline
+pop.subpop.0.species.pipe.generate-max = false
+pop.subpop.0.species.pipe.num-sources = 2
+pop.subpop.0.species.pipe.source.0  = ec.gp.semantic.breed.CX
+pop.subpop.0.species.pipe.source.0.prob = 0.5
+pop.subpop.0.species.pipe.source.1  = ec.gp.semantic.breed.CM
+pop.subpop.0.species.pipe.source.1.prob = 0.5
+
+
+
+
+#
+# Here we define the default values for Crossover,
+# Reproduction, Mutation, as well as our selection
+# approaches (Koza I).  These can be overridden on a per-species
+# level of course.
+#
+
+pop.subpop.0.species.pipe.source.0.source.0 = ec.select.TournamentSelection
+pop.subpop.0.species.pipe.source.0.source.1 = same
+pop.subpop.0.species.pipe.source.1.source.0 = ec.select.TournamentSelection
+gp.breed.CX.ns.0 = ec.gp.semantic.nodeselectors.LinearProbabilityNodeSelector
+gp.breed.CX.ns.1 = same
+gp.breed.CM.ns.0 = ec.gp.semantic.nodeselectors.LinearProbabilityNodeSelector
+gp.breed.CM.build.0 = ec.gp.semantic.initialization.CI
+pop.subpop.0.species.pipe.source.1.build.0.detector = ec.gp.semantic.geometry.L2ConvexHullDetector
+gp.breed.CX.tries = 1
+gp.breed.CX.maxdepth = 17
+gp.breed.CM.tries = 1
+gp.breed.CM.maxdepth = 17
+
+gp.breed.CX.inverter = ec.gp.semantic.inverters.DoubleSemanticInverter
+gp.breed.CM.inverter = ec.gp.semantic.inverters.DoubleSemanticInverter
+
+gp.breed.CX.midpointProvider = ec.gp.semantic.geometry.SimpleDoubleMidpointProvider
+
+# Reproduction will use Tournament Selection 
+breed.reproduce.source.0 = ec.gp.semantic.select.CTSStat
+
+
+# the next four items are already defined in koza.params, but we
+# put them here to be clear.
+
+# We have one function set, of class GPFunctionSet
+gp.fs.size = 1
+gp.fs.0 = ec.gp.GPFunctionSet
+# We'll call the function set "f0".
+gp.fs.0.name = f0
+
+# We have five functions in the function set.  They are:
+gp.fs.0.size = 9
+gp.fs.0.func.0 = ec.app.semanticGP.func.numeric.X0
+gp.fs.0.func.0.nc = nc0
+#gp.fs.0.func.1 = ec.app.semanticGP.func.numeric.X1
+#gp.fs.0.func.1.nc = nc0
+gp.fs.0.func.1 = ec.app.semanticGP.func.numeric.Sum
+gp.fs.0.func.1.nc = nc2
+gp.fs.0.func.2 = ec.app.semanticGP.func.numeric.Sub
+gp.fs.0.func.2.nc = nc2
+gp.fs.0.func.3 = ec.app.semanticGP.func.numeric.Mul
+gp.fs.0.func.3.nc = nc2
+gp.fs.0.func.4 = ec.app.semanticGP.func.numeric.Div
+gp.fs.0.func.4.nc = nc2
+gp.fs.0.func.5 = ec.app.semanticGP.func.numeric.Sin
+gp.fs.0.func.5.nc = nc1
+gp.fs.0.func.6 = ec.app.semanticGP.func.numeric.Cos
+gp.fs.0.func.6.nc = nc1
+gp.fs.0.func.7 = ec.app.semanticGP.func.numeric.Exp
+gp.fs.0.func.7.nc = nc1
+gp.fs.0.func.8 = ec.app.semanticGP.func.numeric.Log
+gp.fs.0.func.8.nc = nc1
+
+
+
+#gp.tc.size = 1
+#gp.tc.0 = ec.gp.GPTreeConstraints
+#gp.tc.0.name = tc0
+#gp.tc.0.fset = f0
+#gp.tc.0.returns = nil
+gp.tc.0.init = ec.gp.semantic.initialization.CI
+#gp.tc.0.init.min-size = 2
+gp.tc.0.init.max-depth = 6
+gp.tc.0.init.detector = ec.gp.semantic.geometry.L2ConvexHullDetector
+
+#eval.problem = ec.app.regression.Nguyen07
+eval.problem = ec.app.semanticGP.Regression
+eval.problem.data = ec.app.semanticGP.RegressionData
+#eval.problem.data = ec.app.regression.RegressionData
+eval.problem.size = 180
+testCases.factory = ec.app.regression.testcases.Nguyen07Factory
+testCases.from = 0
+testCases.to = 2
+testCases.count = 20
+
+#print-params = true
+#print-accessed-params = true
+#print-unaccessed-params = true
+
+stat.file = $out.stat
+quit-on-run-complete = false
