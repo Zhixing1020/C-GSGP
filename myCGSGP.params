@@ -15,7 +15,7 @@ stat.calculateUniqueSemantics = true
 stat.calculateUniqueIndividuals = true
 evaluationLimit = 10000000
 stat.out = ./gp-workspace-2016Competent/Evolution/out.stat
-stat.equivalenceChecker = ec.gp.syntactic.equivalence.DoubleEquivalenceChecker
+stat.equivalenceChecker = ec.gp.syntactic.equivalence.IEquivalenceChecker
 libraryFactory = ec.gp.semantic.library.DoublePopulationLibraryFactory
 
 pop.subpop.0.species.fitness = ec.gp.koza.KozaFitness
