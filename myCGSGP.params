@@ -4,7 +4,8 @@
 
 parent.0 = ./gp-workspace-2016Competent/Evolution/src/ec/gp/koza/koza.params
 
-jobs = 30
+jobs = 0
+#To set the jobs more than one, you should reset SimpleNodeBase.totalEvaluationCount in the setup function of ec.gp.semantic.EvoState.java
 seed.0 = 123456
 
 state = ec.gp.semantic.EvoState
